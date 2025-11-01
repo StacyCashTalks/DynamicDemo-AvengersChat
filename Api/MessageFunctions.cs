@@ -29,16 +29,16 @@ public class MessageFunctions(
         {
             return new BadRequestObjectResult("Invalid message");
         }
+        
+        var messageTexts = 
+            HeroMessages.Messages
+                .Where(m => m.FromHeroId.ToString() == message.FromPersonId)
+                .ToList();
+        var messageText = messageTexts.Count == 0 
+            ? RandomMessageGenerator() 
+            : messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
 
-        var messageTexts = HeroMessages.Messages.Where(m => m.FromHeroId.ToString() == message.FromPersonId).ToList();
-        var messageText = messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
-        if (string.IsNullOrWhiteSpace(messageText))
-        {
-            messageText = @"zzzzzzzz <static> xcxcxcxcxc <crackle> zzzzzzz";
-        }
-        
         var webPubSubServiceClient = webPubSub.Client;
-        
         var sentMessage = new Message(messageText, message.FromPersonId, DateTime.UtcNow);
         var sentMessageJson = JsonSerializer.Serialize(sentMessage, JsonSerializerOptions.Web);
         await webPubSubServiceClient.SendToAllAsync(sentMessageJson);
@@ -69,26 +69,25 @@ public class MessageFunctions(
         }
         
         var messageTexts = 
-            HeroMessages
-                .Messages
-                .Where(m => m.FromHeroId.ToString() == message.FromPersonId && m.Category == "group")
+            HeroMessages.Messages
+                .Where(m => 
+                    m.FromHeroId.ToString() == message.FromPersonId
+                    && m.ToHeroId.ToString() == hero.Group.Id 
+                    && m.Category == "group")
                 .ToList();
-        
-        var messageText = messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
-        if (string.IsNullOrWhiteSpace(messageText))
-        {
-            messageText = @"zzzzzzzz <static> xcxcxcxcxc <crackle> zzzzzzz";
-        }
+        var messageText = messageTexts.Count == 0 
+            ? RandomMessageGenerator() 
+            : messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
         
         var webPubSubServiceClient = webPubSub.Client;
         
         var sentMessage = new Message(messageText, message.FromPersonId, DateTime.UtcNow);
         var sentMessageJson = JsonSerializer.Serialize(sentMessage, JsonSerializerOptions.Web);
-        await webPubSubServiceClient.SendToGroupAsync(message.ToGroupId, sentMessageJson);
+        await webPubSubServiceClient.SendToGroupAsync(hero.Group.Id, sentMessageJson);
         
         return new NoContentResult();
     }
-    
+
     [Function(nameof(MessageFunctions) + "_SendToHero")]
     public async Task<IActionResult> SendToHero(
         [HttpTrigger(
@@ -105,16 +104,16 @@ public class MessageFunctions(
         }
         
         var messageTexts = 
-            HeroMessages
-                .Messages
-                .Where(m => m.FromHeroId.ToString() == message.FromPersonId && message.ToPersonId == m.ToHeroId.ToString() && m.Category != "group")
+            HeroMessages.Messages
+                .Where(m => 
+                    m.FromHeroId.ToString() == message.FromPersonId
+                    && m.ToHeroId.ToString() == message.ToPersonId 
+                    && m.Category == "direct")
                 .ToList();
-        
-        var messageText = messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
-        if (string.IsNullOrWhiteSpace(messageText))
-        {
-            messageText = @"zzzzzzzz <static> xcxcxcxcxc <crackle> zzzzzzz";
-        }
+        string messageText;
+        messageText = messageTexts.Count == 0 
+            ? RandomMessageGenerator() 
+            : messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
         
         var webPubSubServiceClient = webPubSub.Client;
         
@@ -123,5 +122,23 @@ public class MessageFunctions(
         await webPubSubServiceClient.SendToUserAsync(message.ToPersonId, sentMessageJson);
         
         return new NoContentResult();
-    }    
+    } 
+    
+    private static string RandomMessageGenerator()
+    {
+        // Create a random message from fake static, to I got nothing to say to you, to something just bizar
+        var fallbackMessages = new List<string>
+        {
+            "I got nothing to say to you.",
+            "zzzzzzzz <static> xcxcxcxcxc <crackle> zzzzzzz",
+            "If you stir pancake batter too long, the bananas get offended.",
+            "Sorry, I’m busy rearranging my sock drawer alphabetically.",
+            "Once I tried to bake a cake in the mailbox, results were inconclusive.",
+            "Did you know rubber ducks can't whistle in space?",
+            "<silence> ... ... ... <static>"
+        };
+        var randomIndex = new Random().Next(fallbackMessages.Count);
+        var randomMessage = fallbackMessages[randomIndex];
+        return randomMessage;
+    }
 }

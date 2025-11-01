@@ -50,16 +50,12 @@
                         <div class="mb-4">
                             <h6>Send to All</h6>
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Enter message..." @bind="_messageToAll" />
                                 <button class="btn btn-primary" @onclick="SendToAllAsync">Send to All</button>
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <h6>Send to @_connectedHero!.Group.Name</h6>
-                            <div class="input-group mb-2">
-                                <input type="text" class="form-control" placeholder="Enter message..." @bind="_messageToGroup" />
-                            </div>
                             <div class="input-group">
                                 <button class="btn btn-primary" @onclick="SendToGroupAsync">Send to Group</button>
                             </div>
@@ -67,9 +63,6 @@
 
                         <div class="mb-0">
                             <h6>Send to Person</h6>
-                            <div class="input-group mb-2">
-                                <input type="text" class="form-control" placeholder="Enter message..." @bind="_messageToPerson" />
-                            </div>
                             <div class="input-group">
                                 <select class="form-select" @bind="_selectedPersonId">
                                     <option value="">Select Person</option> 
@@ -119,9 +112,6 @@
 @code {
     private readonly List<Message> _messages = [];
     private string? _selectedPersonId;
-    private string _messageToAll = string.Empty;
-    private string _messageToGroup = string.Empty;
-    private string _messageToPerson = string.Empty;
     private SuperHero? _connectedHero;
 
     protected override void OnInitialized()
@@ -145,8 +135,7 @@
 
     private async Task SendToAllAsync()
     {
-        await MessagesService.SendToAllAsync(_messageToAll);
-        _messageToAll = string.Empty;
+        await MessagesService.SendToAllAsync();
     }
 
     private async Task SendToGroupAsync()
@@ -156,8 +145,7 @@
             return;
         }
         
-        await MessagesService.SendToGroupAsync(_connectedHero.Group.Id, _messageToGroup);
-        _messageToGroup = string.Empty;
+        await MessagesService.SendToGroupAsync();
     }
     
     private async Task SendToHeroAsync()
@@ -166,8 +154,7 @@
         {
             return;
         }
-        await MessagesService.SendToHeroAsync(_selectedPersonId, _messageToGroup);
-        _messageToGroup = string.Empty;
+        await MessagesService.SendToHeroAsync(_selectedPersonId);
     }
     
     private void OnConnectionStateChanged(bool connected)

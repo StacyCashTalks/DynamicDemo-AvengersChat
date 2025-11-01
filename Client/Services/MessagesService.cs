@@ -5,7 +5,7 @@ namespace Client.Services;
 
 public class MessagesService(WebPubSubService webPubSubService, HttpClient httpClient)
 {
-    public async Task<bool> SendToAllAsync(string message)
+    public async Task<bool> SendToAllAsync()
     {
         if (!webPubSubService.IsConnected || string.IsNullOrWhiteSpace(webPubSubService.CurrentUserId))
         {
@@ -14,7 +14,7 @@ public class MessagesService(WebPubSubService webPubSubService, HttpClient httpC
 
         try
         {
-            var messageAll = new MessageAll(message, webPubSubService.CurrentUserId);
+            var messageAll = new MessageAll(webPubSubService.CurrentUserId);
             var response = await httpClient.PostAsJsonAsync("api/message/all", messageAll);
             return response.IsSuccessStatusCode;
         }
@@ -24,7 +24,7 @@ public class MessagesService(WebPubSubService webPubSubService, HttpClient httpC
         }
     }
 
-    public async Task<bool> SendToGroupAsync(string groupId, string message)
+    public async Task<bool> SendToGroupAsync()
     {
         if (!webPubSubService.IsConnected || string.IsNullOrWhiteSpace(webPubSubService.CurrentUserId))
         {
@@ -33,7 +33,7 @@ public class MessagesService(WebPubSubService webPubSubService, HttpClient httpC
 
         try
         {
-            var messageGroup = new MessageGroup(message, webPubSubService.CurrentUserId, groupId);
+            var messageGroup = new MessageGroup(webPubSubService.CurrentUserId);
             var response = await httpClient.PostAsJsonAsync("api/message/group", messageGroup);
             return response.IsSuccessStatusCode;
         }
@@ -43,7 +43,7 @@ public class MessagesService(WebPubSubService webPubSubService, HttpClient httpC
         }
     }
 
-    public async Task<bool> SendToHeroAsync(string toPersonId, string message)
+    public async Task<bool> SendToHeroAsync(string toPersonId)
     {
         if (!webPubSubService.IsConnected || string.IsNullOrWhiteSpace(webPubSubService.CurrentUserId))
         {
@@ -52,7 +52,7 @@ public class MessagesService(WebPubSubService webPubSubService, HttpClient httpC
 
         try
         {
-            var messageHero = new MessageHero(message, webPubSubService.CurrentUserId, toPersonId);
+            var messageHero = new MessageHero(webPubSubService.CurrentUserId, toPersonId);
             var response = await httpClient.PostAsJsonAsync("api/message/hero", messageHero);
             return response.IsSuccessStatusCode;
         }
