@@ -36,24 +36,15 @@ A shared library containing models and data used by both the Client and Api proj
 
 ## Azure Resources Required
 
-To run this application, you'll need the following Azure resources:
+To run this application locally, you'll need the following Azure resources:
 
-1. **Azure Static Web App**
-   - Hosts the Blazor WebAssembly client application
-   - Integrates with the Azure Functions API
-   - [Create a Static Web App](https://learn.microsoft.com/en-us/azure/static-web-apps/get-started-portal)
-
-2. **Azure Web PubSub Service**
+1. **Azure Web PubSub Service**
    - Provides real-time messaging capabilities via WebSocket
    - Enables broadcasting messages to all users, groups, or specific users
    - [Create a Web PubSub resource](https://learn.microsoft.com/en-us/azure/azure-web-pubsub/howto-develop-create-instance)
    - You'll need the connection string from this service
 
-3. **Cosmos DB** (Optional - referenced in Api.csproj)
-   - The project has Cosmos DB extensions installed but may not be actively used
-   - Can be used for message persistence if needed
-
-4. **Application Insights** (Optional but recommended)
+2. **Application Insights** (Optional but recommended)
    - Configured in the API for telemetry and monitoring
    - Connection string can be provided via configuration
 
@@ -142,7 +133,7 @@ The application requires both the API and Client to be running simultaneously. T
 
 4. **Start SWA CLI** (in a third terminal):
    ```bash
-   swa start http://localhost:7001 --api-location http://localhost:7071
+   swa start http://localhost:7001
    ```
    
    The SWA CLI will start a local emulator that combines both the client and API, typically on port 4280.
