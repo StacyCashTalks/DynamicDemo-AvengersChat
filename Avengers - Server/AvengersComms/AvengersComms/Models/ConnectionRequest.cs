@@ -1,0 +1,6 @@
+namespace AvengersComms.Models;
+
+public record ConnectionResponse(
+    Uri? Uri,
+    string UserId,
+    string HubName);
