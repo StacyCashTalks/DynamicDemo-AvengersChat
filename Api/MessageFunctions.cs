@@ -1,9 +1,11 @@
 using System.Text.Json;
+using Api.Services;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.Models;
+using Models.Users;
 
 namespace Api;
 
@@ -28,15 +30,16 @@ public class MessageFunctions(
             return new BadRequestObjectResult("Invalid message");
         }
 
-        var correctedMessage = "zzzz <static> zzzzzz <crackle>";
-        if (!string.IsNullOrWhiteSpace(message.Message))
+        var messageTexts = HeroMessages.Messages.Where(m => m.FromHeroId.ToString() == message.FromPersonId).ToList();
+        var messageText = messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
+        if (string.IsNullOrWhiteSpace(messageText))
         {
-            correctedMessage = message.Message;       
+            messageText = @"zzzzzzzz <static> xcxcxcxcxc <crackle> zzzzzzz";
         }
         
         var webPubSubServiceClient = webPubSub.Client;
         
-        var sentMessage = new Message(correctedMessage, message.FromPersonId, DateTime.UtcNow);
+        var sentMessage = new Message(messageText, message.FromPersonId, DateTime.UtcNow);
         var sentMessageJson = JsonSerializer.Serialize(sentMessage, JsonSerializerOptions.Web);
         await webPubSubServiceClient.SendToAllAsync(sentMessageJson);
         
@@ -58,15 +61,28 @@ public class MessageFunctions(
             return new BadRequestObjectResult("Invalid message");
         }
         
-        var correctedMessage = "zzzz <static> zzzzzz <crackle>";
-        if (!string.IsNullOrWhiteSpace(message.Message))
+        var hero = SuperHeros.SuperHeroes.FirstOrDefault(x => x.Id == message.FromPersonId);
+
+        if (hero is null)
         {
-            correctedMessage = message.Message;       
+            return new BadRequestObjectResult("Invalid message");       
+        }
+        
+        var messageTexts = 
+            HeroMessages
+                .Messages
+                .Where(m => m.FromHeroId.ToString() == message.FromPersonId && m.Category == "group")
+                .ToList();
+        
+        var messageText = messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
+        if (string.IsNullOrWhiteSpace(messageText))
+        {
+            messageText = @"zzzzzzzz <static> xcxcxcxcxc <crackle> zzzzzzz";
         }
         
         var webPubSubServiceClient = webPubSub.Client;
         
-        var sentMessage = new Message(correctedMessage, message.FromPersonId, DateTime.UtcNow);
+        var sentMessage = new Message(messageText, message.FromPersonId, DateTime.UtcNow);
         var sentMessageJson = JsonSerializer.Serialize(sentMessage, JsonSerializerOptions.Web);
         await webPubSubServiceClient.SendToGroupAsync(message.ToGroupId, sentMessageJson);
         
@@ -88,15 +104,21 @@ public class MessageFunctions(
             return new BadRequestObjectResult("Invalid message");
         }
         
-        var correctedMessage = "zzzz <static> zzzzzz <crackle>";
-        if (!string.IsNullOrWhiteSpace(message.Message))
+        var messageTexts = 
+            HeroMessages
+                .Messages
+                .Where(m => m.FromHeroId.ToString() == message.FromPersonId && message.ToPersonId == m.ToHeroId.ToString() && m.Category != "group")
+                .ToList();
+        
+        var messageText = messageTexts.ElementAt(new Random().Next(messageTexts.Count)).Message;
+        if (string.IsNullOrWhiteSpace(messageText))
         {
-            correctedMessage = message.Message;       
+            messageText = @"zzzzzzzz <static> xcxcxcxcxc <crackle> zzzzzzz";
         }
         
         var webPubSubServiceClient = webPubSub.Client;
         
-        var sentMessage = new Message(correctedMessage, message.FromPersonId, DateTime.UtcNow);
+        var sentMessage = new Message(messageText, message.FromPersonId, DateTime.UtcNow);
         var sentMessageJson = JsonSerializer.Serialize(sentMessage, JsonSerializerOptions.Web);
         await webPubSubServiceClient.SendToUserAsync(message.ToPersonId, sentMessageJson);
         
