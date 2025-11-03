@@ -19,7 +19,7 @@
                     @foreach (var hero in heroesInGroup)
                     {
                         <div class="col">
-                            <div class="card h-100 hero-card" @onclick="() => SignInAsHero(hero)" style="cursor: pointer;">
+                            <div class="card h-100 hero-card @(isSigningIn ? "disabled" : "")" @onclick="() => SignInAsHero(hero)" style="cursor: @(isSigningIn ? "not-allowed" : "pointer");">
                                 <div class="card-body">
                                     <h5 class="card-title">@hero.Alias</h5>
                                     <p class="card-text text-muted">@hero.Name</p>
@@ -43,11 +43,22 @@
         transform: translateY(-5px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
+
+    .hero-card.disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
 </style>
 
 @code {
+    private bool isSigningIn = false;
+
     private async Task SignInAsHero(SuperHero hero)
     {
+        if (isSigningIn) return;
+
+        isSigningIn = true;
+
         if (!WebPubSubService.IsConnected)
         {
             await WebPubSubService.ConnectAsync(hero.Id);
