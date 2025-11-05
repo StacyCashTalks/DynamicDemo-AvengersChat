@@ -10,6 +10,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{0DCABA44-D276-4062-9D1E-0694B262B1B4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{A8E3A285-7ABF-4D0D-ABE4-BF1029909872}"
+	ProjectSection(SolutionItems) = preProject
+		DemoInstructions\Step-1-Add-Web-Pub-Sub\Instructiions.md = DemoInstructions\Step-1-Add-Web-Pub-Sub\Instructiions.md
+		DemoInstructions\Step-2-Send-To-Person\Instructions.md = DemoInstructions\Step-2-Send-To-Person\Instructions.md
+		DemoInstructions\Step-3-Send-To-Group\Instructions.md = DemoInstructions\Step-3-Send-To-Group\Instructions.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
