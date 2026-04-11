@@ -3,117 +3,163 @@
 
 @implements IDisposable
 
-<PageTitle>Real-time Notifications</PageTitle>
+<PageTitle>Avengers Command Deck</PageTitle>
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8">
-            <h1>Real-time Notifications Demo</h1>
-            
-            @* <div class="card mb-4"> *@
-            @*     <div class="card-header d-flex justify-content-between align-items-center"> *@
-            @*         <h5 class="mb-0">Connection Status</h5> *@
-            @*         <span class="badge @(WebPubSubService.IsConnected ? "bg-success" : "bg-danger")"> *@
-            @*             @(WebPubSubService.IsConnected ? "Connected" : "Disconnected") *@
-            @*         </span> *@
-            @*     </div> *@
-            @*     <div class="card-body"> *@
-            @*         @if (!WebPubSubService.IsConnected) *@
-            @*         { *@
-            @*             <a href="/signin" class="btn btn-primary"> *@
-            @*                 Connect *@
-            @*             </a> *@
-            @*         } *@
-            @*         else *@
-            @*         { *@
-            @*             <button class="btn btn-danger" @onclick="DisconnectAsync"> *@
-            @*                 Disconnect *@
-            @*             </button> *@
-            @* *@
-            @*             <div class="mt-3"> *@
-            @*                 <small class="text-muted"> *@
-            @*                     Connected as: <strong>@_connectedHero!.Alias</strong> *@
-            @*                 </small> *@
-            @*             </div> *@
-            @*         } *@
-            @*     </div> *@
-            @* </div> *@
+<div class="chat-page">
+    <div class="chat-grid">
+        <section class="chat-main">
+            <section class="panel-surface connection-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="section-kicker">Network Status</p>
+                        <h2>Connection Status</h2>
+                    </div>
+                    <span class="status-badge @(WebPubSubService.IsConnected ? "status-badge--connected" : "status-badge--disconnected")">
+                        @(WebPubSubService.IsConnected ? "Online" : "Offline")
+                    </span>
+                </div>
 
-            @* @if (WebPubSubService.IsConnected) *@
-            @* { *@
-            @*     <div class="card mb-4"> *@
-            @*         <div class="card-header"> *@
-            @*             <h5 class="mb-0">Send Messages</h5> *@
-            @*         </div> *@
-            @*         <div class="card-body"> *@
-            @*             <div class="mb-4"> *@
-            @*                 <h6>Send to All</h6> *@
-            @*                 <div class="input-group"> *@
-            @*                     <button class="btn btn-primary" @onclick="SendToAllAsync">Send to All</button> *@
-            @*                 </div> *@
-            @*             </div> *@
-            @* *@
-            @*             <div class="mb-4"> *@
-            @*                 <h6>Send to @_connectedHero!.Group.Name</h6> *@
-            @*                 <div class="input-group"> *@
-            @*                     <button class="btn btn-primary" @onclick="SendToGroupAsync">Send to Group</button> *@
-            @*                 </div> *@
-            @*             </div> *@
-            @* *@
-            @*             <div class="mb-0"> *@
-            @*                 <h6>Send to Person</h6> *@
-            @*                 <div class="input-group"> *@
-            @*                     <select class="form-select" @bind="_selectedPersonId"> *@
-            @*                         <option value="">Select Person</option>  *@
-            @*                         @foreach (var hero in SuperHeros.SuperHeroes.Where(h => h.Id != WebPubSubService.CurrentUserId).OrderBy(h => h.Alias)) *@
-            @*                         { *@
-            @*                             <option value="@hero.Id">@hero.Alias</option> *@
-            @*                         } *@
-            @*                     </select> *@
-            @*                     <button class="btn btn-primary" @onclick="SendToHeroAsync">Send to Person</button> *@
-            @*                 </div> *@
-            @*             </div> *@
-            @*         </div> *@
-            @*     </div> *@
-            @*      *@
-            @*     <div class="card"> *@
-            @*         <div class="card-header d-flex justify-content-between align-items-center"> *@
-            @*             <h5 class="mb-0">Messages</h5> *@
-            @*             <button class="btn btn-sm btn-outline-secondary" @onclick="ClearMessages"> *@
-            @*                 Clear *@
-            @*             </button> *@
-            @*         </div> *@
-            @*         <div class="card-body"> *@
-            @*             @if (_messages.Count == 0) *@
-            @*             { *@
-            @*                 <p class="text-muted">No messages received yet. Messages will appear here in real-time.</p> *@
-            @*             } *@
-            @*             else *@
-            @*             { *@
-            @*                 <div class="message-list" style="max-height: 400px; overflow-y: auto;"> *@
-            @*                     @foreach (var message in _messages.OrderByDescending(m => m.SentAt)) *@
-            @*                     { *@
-            @*                         <div class="alert alert-dismissible fade show" role="alert"> *@
-            @*                             @message.MessageText *@
-            @*                         </div> *@
-            @*                         <div>@message.SentAt</div> *@
-            @*                         <div>@SuperHeros.SuperHeroes.First(sh => sh.Id == message.FromPersonId).Alias</div> *@
-            @*                     } *@
-            @*                 </div> *@
-            @*             } *@
-            @*         </div> *@
-            @*     </div> *@
-            @* } *@
-        </div>
-        <div class="col-md-4">
-            <h5>Join The Avengers</h5>
-            <p>
-                https://avengers-chat.stacy-clouds.dev/
+                @if (!WebPubSubService.IsConnected)
+                {
+                    <div class="connection-panel__actions">
+                        <p class="panel-copy">
+                            The command deck is idle. Select a hero identity to establish a Web PubSub connection.
+                        </p>
+                        <a href="/signin" class="btn btn-primary action-button">
+                            Connect to the Uplink
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="connection-panel__actions">
+                        <div>
+                            <p class="panel-copy panel-copy--tight">
+                                Active hero:
+                                <strong>@_connectedHero!.Alias</strong>
+                            </p>
+                            <p class="panel-copy panel-copy--secondary">
+                                Group channel: @_connectedHero.Group.Name
+                            </p>
+                        </div>
+                        <button class="btn action-button action-button--secondary" @onclick="DisconnectAsync">
+                            Disconnect
+                        </button>
+                    </div>
+                }
+            </section>
+
+            @if (WebPubSubService.IsConnected)
+            {
+                <div class="chat-workspace">
+                    <section class="panel-surface command-panel">
+                        <div class="command-grid">
+                            <div class="command-card">
+                                <span class="command-card__label">Broadcast</span>
+                                <h3>Send to All</h3>
+                                <p>Push the next alert to every connected Avenger.</p>
+                                <button class="btn btn-primary action-button" @onclick="SendToAllAsync">Send to All</button>
+                            </div>
+
+                            <div class="command-card">
+                                <span class="command-card__label">Squad</span>
+                                <h3>Send to @_connectedHero!.Group.Name</h3>
+                                <p>Target the heroes in your current team channel.</p>
+                                <button class="btn btn-primary action-button" @onclick="SendToGroupAsync">Send to Group</button>
+                            </div>
+
+                            <div class="command-card command-card--targeted">
+                                <span class="command-card__label">Direct Message</span>
+                                <h3>Send to Person</h3>
+                                <p>Lock on to a single hero before dispatching the message.</p>
+                                <div class="targeted-action">
+                                    <select class="form-select themed-select" @bind="_selectedPersonId">
+                                        <option value="">Select Person</option>
+                                        @foreach (var hero in SuperHeros.SuperHeroes.Where(h => h.Id != WebPubSubService.CurrentUserId).OrderBy(h => h.Alias))
+                                        {
+                                            <option value="@hero.Id">@hero.Alias</option>
+                                        }
+                                    </select>
+                                    <button class="btn btn-primary action-button" @onclick="SendToHeroAsync">Send to Person</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="panel-surface message-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <p class="section-kicker">Live Feed</p>
+                                <h2>Messages</h2>
+                            </div>
+                            <button class="btn action-button action-button--ghost" @onclick="ClearMessages">
+                                Clear
+                            </button>
+                        </div>
+
+                        <div class="message-panel__body">
+                            @if (_messages.Count == 0)
+                            {
+                                <div class="empty-state">
+                                    <p class="empty-state__headline">No transmissions yet.</p>
+                                    <p class="empty-state__copy">Incoming messages will stream into this panel in real time.</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="message-feed">
+                                    @foreach (var message in _messages.OrderByDescending(m => m.SentAt))
+                                    {
+                                        <article class="message-card">
+                                            <div class="message-card__meta">
+                                                <span class="message-card__sender">@GetHeroAlias(message.FromPersonId)</span>
+                                                <span class="message-card__timestamp">@message.SentAt.ToLocalTime().ToString("MMM d | h:mm tt")</span>
+                                            </div>
+                                            <p class="message-card__text">@message.MessageText</p>
+                                        </article>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </section>
+                </div>
+            }
+            else
+            {
+                <section class="panel-surface message-panel message-panel--preview">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="section-kicker">Live Feed</p>
+                            <h2>Messages</h2>
+                        </div>
+                    </div>
+                    <div class="empty-state empty-state--preview">
+                        <p class="empty-state__headline">Stand by for incoming hero traffic.</p>
+                        <p class="empty-state__copy">
+                            Once connected, your message stream stays visible here while controls remain within reach.
+                        </p>
+                    </div>
+                </section>
+            }
+        </section>
+
+        <aside class="panel-surface join-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="section-kicker">Recruitment</p>
+                    <h2>Join the Avengers</h2>
+                </div>
+            </div>
+            <p class="join-panel__copy">
+                Scan the code or share the URL to pull more heroes into the live demo.
             </p>
-            <p>
+            <a class="join-panel__link" href="https://avengers-chat.stacy-clouds.dev/" target="_blank" rel="noreferrer">
+                avengers-chat.stacy-clouds.dev
+            </a>
+            <div class="join-panel__qr-frame">
                 <img src="/avengersdemoqr.png" alt="QR Code to join the demo" class="img-fluid" />
-            </p>
-        </div>
+            </div>
+        </aside>
     </div>
 </div>
 

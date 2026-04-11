@@ -1,0 +1,66 @@
+@page "/signin"
+@inject WebPubSubService WebPubSubService
+@inject NavigationManager Navigation
+
+<PageTitle>Sign In - Select Your Hero</PageTitle>
+
+<div class="signin-page">
+    <section class="signin-hero panel-surface">
+        <p class="section-kicker">Hero Selection</p>
+        <h1>Choose Your Hero</h1>
+        <p class="signin-hero__copy">
+            Pick your identity to enter the command deck and join the live Avengers chat stream.
+        </p>
+    </section>
+
+    @foreach (var group in SuperHeros.Groups)
+    {
+        var heroesInGroup = SuperHeros.SuperHeroes.Where(h => h.Group.Id == group.Id).ToList();
+
+        if (heroesInGroup.Any())
+        {
+            <section class="hero-group">
+                <div class="hero-group__header">
+                    <p class="section-kicker">Team Channel</p>
+                    <h2>@group.Name</h2>
+                </div>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach (var hero in heroesInGroup)
+                    {
+                        <div class="col">
+                            <div class="card h-100 hero-card @(isSigningIn ? "disabled" : "")"
+                                 @onclick="() => SignInAsHero(hero)"
+                                 role="button"
+                                 tabindex="0"
+                                 aria-disabled="@isSigningIn">
+                                <div class="card-body">
+                                    <span class="hero-card__channel">@hero.Group.Name</span>
+                                    <h3 class="card-title">@hero.Alias</h3>
+                                    <p class="card-text">@hero.Name</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+    }
+</div>
+
+@code {
+    private bool isSigningIn = false;
+
+    private async Task SignInAsHero(SuperHero hero)
+    {
+        if (isSigningIn) return;
+
+        isSigningIn = true;
+
+        if (!WebPubSubService.IsConnected)
+        {
+            await WebPubSubService.ConnectAsync(hero.Id);
+        }
+
+        Navigation.NavigateTo("/");
+    }
+}
