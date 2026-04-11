@@ -333,13 +333,20 @@ Our signin page is not going to be too spectacular, It allows you to pick a supe
 
 ``` c#
 @page "/signin"
-@inject WebPubSubService WebPubSubService
+@using Client.Services
 @inject NavigationManager Navigation
+@inject WebPubSubService WebPubSubService
 
 <PageTitle>Sign In - Select Your Hero</PageTitle>
 
-<div class="container mt-4">
-    <h1 class="mb-4">Choose Your Hero</h1>
+<div class="signin-page">
+    <section class="signin-hero panel-surface">
+        <p class="section-kicker">Hero Selection</p>
+        <h1>Choose Your Hero</h1>
+        <p class="signin-hero__copy">
+            Pick your identity to enter the command deck and join the live Avengers chat stream.
+        </p>
+    </section>
 
     @foreach (var group in SuperHeros.Groups)
     {
@@ -347,42 +354,33 @@ Our signin page is not going to be too spectacular, It allows you to pick a supe
 
         if (heroesInGroup.Any())
         {
-            <div class="mb-5">
-                <h3 class="mb-3">@group.Name</h3>
+            <section class="hero-group">
+                <div class="hero-group__header">
+                    <p class="section-kicker">Team Channel</p>
+                    <h2>@group.Name</h2>
+                </div>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     @foreach (var hero in heroesInGroup)
                     {
                         <div class="col">
-                            <div class="card h-100 hero-card @(isSigningIn ? "disabled" : "")" @onclick="() => SignInAsHero(hero)" style="cursor: @(isSigningIn ? "not-allowed" : "pointer");">
+                            <div class="card h-100 hero-card @(isSigningIn ? "disabled" : "")"
+                                 @onclick="() => SignInAsHero(hero)"
+                                 role="button"
+                                 tabindex="0"
+                                 aria-disabled="@isSigningIn">
                                 <div class="card-body">
-                                    <h5 class="card-title">@hero.Alias</h5>
-                                    <p class="card-text text-muted">@hero.Name</p>
-                                    <small class="text-secondary">@hero.Group.Name</small>
+                                    <span class="hero-card__channel">@hero.Group.Name</span>
+                                    <h3 class="card-title">@hero.Alias</h3>
+                                    <p class="card-text">@hero.Name</p>
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
-            </div>
+            </section>
         }
     }
 </div>
-
-<style>
-    .hero-card {
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .hero-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .hero-card.disabled {
-        opacity: 0.6;
-        pointer-events: none;
-    }
-</style>
 
 @code {
     private bool isSigningIn = false;

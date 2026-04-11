@@ -17,9 +17,9 @@
                     <span class="status-badge @(WebPubSubService.IsConnected ? "status-badge--connected" : "status-badge--disconnected")">
                         @(WebPubSubService.IsConnected ? "Online" : "Offline")
                     </span>
-                </div> *@
+                </div>
 
-                @* @if (!WebPubSubService.IsConnected)
+                @if (!WebPubSubService.IsConnected)
                 {
                     <div class="connection-panel__actions">
                         <p class="panel-copy">
@@ -168,11 +168,11 @@
     private string? _selectedPersonId;
     private SuperHero? _connectedHero;
     
+    public void Dispose()
+    {
 
-
-
-
-
+    }
+    
     private async Task SendToAllAsync()
     {
 
@@ -190,9 +190,9 @@
     {
         _messages.Clear();
     }
-
-    public void Dispose()
+    
+    private string GetHeroAlias(string id)
     {
-
+        return SuperHeros.SuperHeroes.First(sh => sh.Id == id).Alias;
     }
 }

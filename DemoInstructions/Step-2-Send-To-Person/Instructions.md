@@ -49,7 +49,7 @@ That is literally it... The users will get their messages sent to them via Web P
 
 ## Client Changes
 
-OK, first we need to send them... Let's change the message function to send to a person
+OK, first we need to send them... Let's change the message service to send to a person
 
 ``` csharp
     public async Task<bool> SendToHeroAsync(string toPersonId)
