@@ -1,5 +1,4 @@
 @page "/signin"
-@inject WebPubSubService WebPubSubService
 @inject NavigationManager Navigation
 
 <PageTitle>Sign In - Select Your Hero</PageTitle>
@@ -52,15 +51,5 @@
 
     private async Task SignInAsHero(SuperHero hero)
     {
-        if (isSigningIn) return;
-
-        isSigningIn = true;
-
-        if (!WebPubSubService.IsConnected)
-        {
-            await WebPubSubService.ConnectAsync(hero.Id);
-        }
-
-        Navigation.NavigateTo("/");
     }
 }

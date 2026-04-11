@@ -8,7 +8,7 @@
 <div class="chat-page">
     <div class="chat-grid">
         <section class="chat-main">
-            <section class="panel-surface connection-panel">
+            @* <section class="panel-surface connection-panel">
                 <div class="panel-heading">
                     <div>
                         <p class="section-kicker">Network Status</p>
@@ -17,9 +17,9 @@
                     <span class="status-badge @(WebPubSubService.IsConnected ? "status-badge--connected" : "status-badge--disconnected")">
                         @(WebPubSubService.IsConnected ? "Online" : "Offline")
                     </span>
-                </div>
+                </div> *@
 
-                @if (!WebPubSubService.IsConnected)
+                @* @if (!WebPubSubService.IsConnected)
                 {
                     <div class="connection-panel__actions">
                         <p class="panel-copy">
@@ -140,7 +140,7 @@
                         </p>
                     </div>
                 </section>
-            }
+            } *@
         </section>
 
         <aside class="panel-surface join-panel">
