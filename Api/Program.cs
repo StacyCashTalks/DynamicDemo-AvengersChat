@@ -13,6 +13,4 @@ builder.Services
     .AddApplicationInsightsTelemetryWorkerService()
     .ConfigureFunctionsApplicationInsights();
 
-builder.Services.AddSingleton<WebPubSub>();
-
 builder.Build().Run();
