@@ -114,6 +114,8 @@ public class ConnectionResponse
 
 Look at that spectacular security!!!! Of courser in the real world you would want to do more validation, but for this demo this is perfect!
 
+As the user has no groups, and no roles defind, they are limited to just receiving messages. We wil be using the API to send the messages so the user does not need these roles. But in a more complex application you can add roles for users to join and leave groups, and limit the groups that the client can send messages to.
+
 ### MessageFunction.cs
 
 Now that can we can send a message URL to the user, we need to actually send messages. Let's start with sending to a person
